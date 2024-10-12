@@ -1,0 +1,8 @@
+EStou vendo tem um problema na sua logica 
+aqui na parte do checkout 
+um problema nos arquivos ssr 
+meu horario acabou por horario acabou por hoje mas ja foi resolvido o problema do botão 
+confira o arquivo checkout.js 
+o erro esta la 
+  Fechouu , mn to meio corrido hoje viagei muito, o que tu acha de resolver amnaha para mim ? 
+  ai nos ja ver o de hoje, acho que esse problema e porque estava tentando colocar o botão de concluir pra fazer duas coisas, salvar o pedido no perfile e mandar a mensgem pro whatt

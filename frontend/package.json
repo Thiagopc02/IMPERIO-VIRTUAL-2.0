@@ -1,0 +1,51 @@
+{
+  "name": "imperio-virtual-2.0",
+  "version": "1.0.0",
+  "description": "Plataforma de e-commerce para Império Bebidas e Tabacos",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "backend": "node backend/server.js",
+    "lint": "next lint",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "e-commerce",
+    "bebidas",
+    "tabacos",
+    "next.js",
+    "tailwindcss"
+  ],
+  "author": "Seu Nome",
+  "license": "ISC",
+  "dependencies": {
+    "@next-auth/sequelize-adapter": "^1.0.8",
+    "@stripe/stripe-js": "^4.3.0",
+    "aos": "^2.3.4",
+    "autoprefixer": "^10.4.20",
+    "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "framer-motion": "^5.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "lottie-react": "^2.4.0",
+    "next": "^14.2.13",
+    "next-auth": "^4.24.7",
+    "pg": "^8.13.0",
+    "pg-hstore": "^2.3.4",
+    "postcss": "^8.4.45",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.3.0",
+    "react-toastify": "^10.0.5",
+    "sequelize": "^6.37.3",
+    "stripe": "^16.8.0",
+    "styled-components": "^6.1.13",
+    "tailwindcss": "^3.4.11"
+  }
+}
