@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST='{"components\\\\Header.js -> ../components/CartIcon":{"id":4470,"files":["static/chunks/470.31ce0a7e6dc84ff6.js"]}}';
+self.__REACT_LOADABLE_MANIFEST="{\"components\\\\Header.js -> ../components/CartIcon\":{\"id\":\"components\\\\Header.js -> ../components/CartIcon\",\"files\":[\"static/chunks/components_CartIcon_js.js\"]}}"

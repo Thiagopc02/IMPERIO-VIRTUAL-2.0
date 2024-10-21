@@ -8,11 +8,16 @@ export default function ProductCard({ product }) {
   const { addItemToCart } = useContext(CartContext);
 
   const handleAddToCart = () => {
+
+    console.log("valor do produto ", product)
     const productWithType = {
       ...product,
-      id: `${product.id}-${type}`, 
+      id: `${product.product_id}`, // ID do produto deve incluir o tipo
     };
     addItemToCart(productWithType, quantity, type);
+
+    // Resetar a quantidade após adicionar ao carrinhoG
+    setQuantity(1);
   };
 
   const price = type === 'unit'

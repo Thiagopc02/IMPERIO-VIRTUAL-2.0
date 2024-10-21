@@ -1,8 +1,8 @@
 {
   "components\\Header.js -> ../components/CartIcon": {
-    "id": 4470,
+    "id": "components\\Header.js -> ../components/CartIcon",
     "files": [
-      "static/chunks/470.31ce0a7e6dc84ff6.js"
+      "static/chunks/components_CartIcon_js.js"
     ]
   }
 }

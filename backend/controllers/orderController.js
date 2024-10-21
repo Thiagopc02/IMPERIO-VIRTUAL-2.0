@@ -43,19 +43,17 @@ exports.getOrdersByUser = async (req, res) => {
 
 // Função para criar um pedido
 exports.createOrder = async (req, res) => {
-  const { userId, items, total, address, paymentMethod } = req.body;
+  const { userId, items, total, address, paymentMethod, retLocal } = req.body;
 
   console.log('Dados recebidos no backend:', req.body); // Log para depuração
 
   try {
     // Validação dos dados de entrada
-    if (!userId || !items || items.length === 0 || !total || !paymentMethod) {
-      return res.status(400).json({ message: 'Dados insuficientes para criar o pedido.' });
-    }
+    const valueUser = userId && userId !== null ? userId : 24;
 
     // Criação do novo pedido
     const newOrder = await Order.create({
-      user_id: userId,
+      user_id: valueUser,
       total_price: total,
       status: 'pendente',
       payment_method: paymentMethod,

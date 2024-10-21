@@ -29,11 +29,11 @@ export default function Login() {
         setIsRegistering(false);
       } else {
         const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-        
+          debugger
         if (typeof window !== 'undefined') {
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify(response.data.user));
-
+          debugger
           // Armazene a URL de retorno
           const redirectTo = localStorage.getItem('redirectAfterLogin') || '/';
           localStorage.removeItem('redirectAfterLogin');

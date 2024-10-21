@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useRef } from 'react';
 import { CartContext } from '../components/context/CartContext';
 import { FaTrash } from 'react-icons/fa'; // Importar o ícone de lixeira
 import axios from 'axios';
@@ -17,8 +17,14 @@ export default function Checkout() {
     number: '',
     sector: '',
     complement: '',
+    city: '',   // Novo campo Cidade
+    state: '',  // Novo campo Estado
+    zipCode: '', // Novo campo CEPuseRef 
     paymentMethod: 'pix',
+    pickup: false,
   });
+
+  const pickupRef = useRef();
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -35,7 +41,9 @@ export default function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    const pickupValue = pickupRef.current.checked; 
+    setIsPickup(pickupValue)
+    debugger
     const items = cartItems.map((item) => ({
       product_id: item.id,
       name: item.name,
@@ -43,12 +51,7 @@ export default function Checkout() {
       price: item.type === 'unit' ? item.unit_price : item.box_price,
       type: item.type,
     }));
-
-    let address = 'Retirada no estabelecimento';
-    if (!isPickup) {
-      address = `${formValues.street}, Número: ${formValues.number}, Setor: ${formValues.sector}, Complemento: ${formValues.complement}`;
-    }
-
+  
     const orderData = {
       items,
       total: cartItems.reduce(
@@ -56,14 +59,21 @@ export default function Checkout() {
           total + (item.type === 'unit' ? item.unit_price * item.quantity : item.box_price * item.quantity),
         0
       ),
-      address,
+      address: isPickup ? 'Retirada no local' : `${formValues.street}, ${formValues.city}`, // Atualiza o endereço
       paymentMethod: formValues.paymentMethod,
+      retLocal: pickupValue
     };
-
+  
     try {
-      const response = await axios.post('http://localhost:5000/api/orders', orderData);
-
+      const response = await axios.post('http://localhost:5000/api/orders/retirarEstabelecimento', orderData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
       if (response.status === 201) {
+        const { token } = response.data; // Captura o token retornado
+        localStorage.setItem('token', token); // Armazena o novo token
         setLoading(false);
         setShowModal(false);
         setConfirmationModal(true);
@@ -74,24 +84,7 @@ export default function Checkout() {
     } catch (error) {
       console.error('Erro ao finalizar o pedido:', error);
       setLoading(false);
-      alert('Erro ao finalizar o pedido, tente novamente.');
     }
-  };
-
-  const sendWhatsAppMessage = () => {
-    const items = cartItems.map((item) => `${item.quantity}x ${item.name}`).join(', ');
-    const total = cartItems
-      .reduce(
-        (total, item) =>
-          total + (item.type === 'unit' ? parseFloat(item.unit_price) : parseFloat(item.box_price)) * item.quantity,
-        0
-      )
-      .toFixed(2);
-    const address = isPickup ? 'Retirada no estabelecimento' : formValues.street;
-    const whatsappMessage = `Olá, gostaria de fazer um pedido.\nProdutos: ${items}\nTotal: R$${total}\nEndereço: ${address}`;
-
-    const whatsappLink = `https://wa.me/5562996916206?text=${encodeURIComponent(whatsappMessage)}`;
-    window.location.href = whatsappLink;
   };
 
   const totalAmount = cartItems
@@ -150,13 +143,12 @@ export default function Checkout() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-gray-800 p-4 rounded shadow-lg text-white max-w-md w-full"> {/* Ajuste no tamanho do modal */}
+          <div className="bg-gray-800 p-4 rounded shadow-lg text-white max-w-md w-full">
             <h2 className="text-xl font-bold mb-4">Finalizar Compra</h2>
             <form onSubmit={handleSubmit}>
+              {/* Input fields for user details */}
               <div className="mb-4">
-                <label htmlFor="name" className="block text-sm">
-                  Nome:
-                </label>
+                <label htmlFor="name" className="block text-sm">Nome:</label>
                 <input
                   type="text"
                   id="name"
@@ -167,9 +159,7 @@ export default function Checkout() {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="email" className="block text-sm">
-                  Email:
-                </label>
+                <label htmlFor="email" className="block text-sm">Email:</label>
                 <input
                   type="email"
                   id="email"
@@ -180,9 +170,7 @@ export default function Checkout() {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="phone" className="block text-sm">
-                  Número Celular:
-                </label>
+                <label htmlFor="phone" className="block text-sm">Número Celular:</label>
                 <input
                   type="tel"
                   id="phone"
@@ -213,7 +201,7 @@ export default function Checkout() {
                   type="checkbox"
                   id="pickup"
                   className="mr-2"
-                  checked={isPickup}
+                  ref={pickupRef}
                   onChange={(e) => setIsPickup(e.target.checked)}
                 />
                 <label htmlFor="pickup">Retirar no estabelecimento</label>
@@ -221,23 +209,39 @@ export default function Checkout() {
 
               {!isPickup && (
                 <div id="addressFields">
+                  {/* Address fields */}
                   <div className="mb-4">
-                    <label htmlFor="street" className="block text-sm">
-                      Rua:
-                    </label>
+                    <label htmlFor="street" className="block text-sm">Rua:</label>
                     <input
                       type="text"
                       id="street"
                       className="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white"
                       value={formValues.street}
                       onChange={handleInputChange}
-                      required
                     />
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="complement" className="block text-sm">
-                      Complemento:
-                    </label>
+                    <label htmlFor="number" className="block text-sm">Número:</label>
+                    <input
+                      type="text"
+                      id="number"
+                      className="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white"
+                      value={formValues.number}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label htmlFor="sector" className="block text-sm">Setor:</label>
+                    <input
+                      type="text"
+                      id="sector"
+                      className="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white"
+                      value={formValues.sector}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label htmlFor="complement" className="block text-sm">Complemento:</label>
                     <input
                       type="text"
                       id="complement"
@@ -246,67 +250,67 @@ export default function Checkout() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="flex space-x-4 mb-4">
-                    <div>
-                      <label htmlFor="number" className="block text-sm">
-                        Número:
-                      </label>
-                      <input
-                        type="text"
-                        id="number"
-                        className="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white"
-                        value={formValues.number}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="sector" className="block text-sm">
-                        Setor:
-                      </label>
-                      <input
-                        type="text"
-                        id="sector"
-                        className="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white"
-                        value={formValues.sector}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
+                  <div className="mb-4">
+                    <label htmlFor="city" className="block text-sm">Cidade:</label>
+                    <input
+                      type="text"
+                      id="city"
+                      className="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white"
+                      value={formValues.city}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label htmlFor="state" className="block text-sm">Estado:</label>
+                    <input
+                      type="text"
+                      id="state"
+                      className="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white"
+                      value={formValues.state}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label htmlFor="zipCode" className="block text-sm">CEP:</label>
+                    <input
+                      type="text"
+                      id="zipCode"
+                      className="w-full p-2 border border-gray-500 rounded bg-gray-700 text-white"
+                      value={formValues.zipCode}
+                      onChange={handleInputChange}
+                    />
                   </div>
                 </div>
               )}
 
               <button
                 type="submit"
-                className="w-full bg-green-600 text-white py-2 mt-4 rounded hover:bg-green-700 transition-colors"
-                style={{ fontFamily: 'Impact, sans-serif' }} // Estilo Impact aplicado
+                className={`w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={loading}
               >
-                {loading ? 'Carregando...' : 'Concluir'}
+                {loading ? 'Processando...' : 'Confirmar Pedido'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="mt-2 text-red-500 underline"
+              >
+                Cancelar
               </button>
             </form>
-            <button
-              onClick={sendWhatsAppMessage}
-              className="w-full bg-blue-600 text-white py-2 mt-2 rounded hover:bg-blue-700 transition-colors"
-            >
-              Confirme Seu Pedido Por WhatsApp
-            </button>
-            <button onClick={() => setShowModal(false)} className="mt-4 text-red-500">
-              Cancelar
-            </button>
           </div>
         </div>
       )}
 
       {confirmationModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-lg max-w-lg w-full">
-            <h2 className="text-xl font-bold mb-4">Pedido confirmado!</h2>
-            <p className="mb-4">Seu pedido foi registrado com sucesso.</p>
-            <button onClick={sendWhatsAppMessage} className="mt-4 px-4 py-2 bg-green-600 text-white">
-              Enviar pedido no WhatsApp
-            </button>
-            <button onClick={() => setConfirmationModal(false)} className="mt-4 px-4 py-2 bg-gray-600 text-white">
+          <div className="bg-gray-800 p-4 rounded shadow-lg text-white max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">Pedido Confirmado!</h2>
+            <p>Seu pedido foi confirmado com sucesso.</p>
+            <button
+              onClick={() => setConfirmationModal(false)}
+              className="w-full bg-blue-600 text-white py-2 mt-4 rounded hover:bg-blue-700 transition-colors"
+            >
               Fechar
             </button>
           </div>

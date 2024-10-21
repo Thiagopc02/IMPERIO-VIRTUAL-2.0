@@ -19,17 +19,20 @@ export function CartProvider({ children }) {
 
   const addItemToCart = (item, quantity = 1, type = 'unit') => {
     setCartItems((prevItems) => {
+      debugger;
       const existingItemIndex = prevItems.findIndex(
-        (cartItem) => cartItem.id === item.id && cartItem.type === type
+        (cartItem) => cartItem.product_id === item.product_id && cartItem.type === type // Comparar ID do produto e tipo
       );
-
+  
       if (existingItemIndex !== -1) {
+        // Se o item já existe no carrinho, atualiza a quantidade
         const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex].quantity += quantity;
+        updatedItems[existingItemIndex].quantity += quantity; // Adiciona a quantidade
         return updatedItems;
       }
-
-      return [...prevItems, { ...item, quantity, type }];
+  
+      // Se não existe, adicionar novo item ao carrinho
+      return [...prevItems, { ...item, quantity, type }]; // Adiciona item ao carrinho
     });
   };
 
@@ -38,10 +41,10 @@ export function CartProvider({ children }) {
       prevItems
         .map((item) =>
           item.id === itemId && item.type === type
-            ? { ...item, quantity: item.quantity - 1 }
+            ? { ...item, quantity: item.quantity - 1 } // Decrementa a quantidade
             : item
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0) // Remove itens com quantidade zero
     );
   };
 

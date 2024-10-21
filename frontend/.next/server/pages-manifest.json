@@ -1,1 +1,7 @@
-{"/about":"pages/about.html","/api/auth/nextauth":"pages/api/auth/nextauth.js","/_error":"pages/_error.js","/_document":"pages/_document.js","/":"pages/index.html","/api/products":"pages/api/products.js","/checkout":"pages/checkout.html","/_app":"pages/_app.js","/profile":"pages/profile.html","/login":"pages/login.html","/404":"pages/404.html"}
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/checkout": "pages/checkout.js",
+  "/": "pages/index.js"
+}

@@ -31,7 +31,7 @@ module.exports = {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || 'your-google-client-id',
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || 'your-google-client-secret',
     DATABASE_URL: process.env.DATABASE_URL || 'your-database-url',
-    JWT_SECRET: process.env.JWT_SECRET || 'your-jwt-secret',
+    JWT_SECRET: process.env.JWT_SECRET || 'novostalentos123',
   },
   async rewrites() {
     return [

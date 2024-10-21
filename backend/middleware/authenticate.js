@@ -10,6 +10,7 @@ if (!JWT_SECRET) {
 
 const authenticate = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];
+  console.log('Token recebido:', token); // Log do token recebido
 
   if (!token) {
     return res.status(401).json({ message: 'Token de autenticação não fornecido.' });

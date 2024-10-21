@@ -19,7 +19,8 @@ app.use(cors({
 
 // Definindo as rotas
 app.use('/api/products', productRoutes); // Rotas de produtos
-app.use('/api/orders', orderRoutes); // Rotas de pedidos
+app.use('/api/orders', orderRoutes); // Rotas de ordem
+app.use('/api/orders/retirarEstabelecimento', orderRoutes); // Rotas de ordem
 app.use('/api/users', userRoutes); // Rotas de usuários
 app.use('/api/auth', authRoutes); // Rotas de autenticação
 
